@@ -41,9 +41,9 @@ def handle_hello():
 
     return jsonify(response_body), 200
 
-#@api.route('/people', methods=['GET'])
-#def get_all_people():
-    #return jsonify(People().get_all
+@api.route('/people', methods=['GET'])
+def get_all_people():
+    return jsonify(People().get_all_people()),200
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
