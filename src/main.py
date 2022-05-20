@@ -32,15 +32,6 @@ def handle_invalid_usage(error):
 def sitemap():
     return generate_sitemap(app)
 
-@app.route('/user', methods=['GET'])
-def handle_hello():
-
-    response_body = {
-        "msg": "Hello, this is your GET /user response "
-    }
-
-    return jsonify(response_body), 200
-
 @app.route('/person', methods=['GET'])
 def get_all_person():
     persons = Person.query.all()
@@ -75,20 +66,65 @@ def get_planet(planet_id):
     
     return jsonify(resp),200
 
+@app.route('/users', methods=['GET'])
+def users():
+    users = User.query.all()
+    list_all_users = list(map(lambda user: user.serialize(),users))
+    return jsonify(list_all_users),200
+
 @app.route('/user/<int:user_id>', methods=['GET'])
 def get_user(user_id):
-    user=User.query.get(user_id)
-    if user==None:
+    user = User.query.get(user_id)
+    if user == None:
         resp = "User does not exist"
     else:
         resp = user.serialize()
 
-    return jsonify(resp),200
-    response_body = {
-        "msg": "Hello, this is your GET /user response "
-    }
+    return jsonify(resp),200    
+   
 
-    return jsonify(response_body), 200
+@app.route("/users/favorites/<int:user_id>", methods=["GET"])
+def get_favourites_of_user(user_id):
+    favourites = Favourite.query.get(user_id)
+    if favourites == None:
+        resp = "This user has not favourites"
+    else:
+        resp = favourites.serialize()
+
+    return jsonify(resp),200  
+
+@app.route("/favorites/planet/<int:planet_id>", methods = ["POST"])
+def add_planet_favourite(planet_id):
+    body = request.get_json()
+    new_planet_favourite = Favourite(user_id=body["user_id"], planet_id=body["planet_id"])
+    db.session.add(Favourite)
+    db.session.commit()
+
+    return jsonify("Planet added to favourites"),200
+
+@app.route("/favorites/planet/<int:planet_id>", methods = ["DELETE"])
+def delete_planet_favourite(planet_id):
+    favourite = Favourite.query.get(planet_id).delete()
+    db.session.commit()
+
+    return jsonify("Planet deleted from favourites"),200
+
+@app.route("/favorites/person/<int:person_id>", methods = ["POST"])
+def add_person_favourite(person_id):
+    body = request.get_json()
+    new_person_favourite = Favourite(user_id=body["user_id"], person_id=body["person_id"])
+    db.session.add(Favourite)
+    db.session.commit()
+
+    return jsonify("Person added to favourites"),200
+
+@app.route("/favorites/person/<int:person_id>", methods = ["DELETE"])
+def delete_person_favourite(person_id):
+    favourite = Favourite.query.get(person_id).delete()
+    db.session.commit()
+
+    return jsonify("Person deleted from favourites"),200
+
 
 
 # this only runs if `$ python src/main.py` is executed
