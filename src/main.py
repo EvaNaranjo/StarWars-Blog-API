@@ -93,38 +93,44 @@ def get_favourites_of_user(user_id):
 
     return jsonify(resp),200  
 
-@app.route("/favourites/planet/<int:planet_id>", methods = ["POST"])
+@app.route("/favourite/planet/<int:planet_id>", methods = ["POST"])
 def add_planet_favourite(planet_id):
     body = request.get_json()
     print(body)
     new_planet_favourite = Favourite(user_id=body["user_id"], planet_id=body["planet_id"])
-    db.session.add(Favourite)
+    db.session.add(new_planet_favourite)
     db.session.commit()
 
     return jsonify("Planet added to favourites"),200
 
-@app.route("/favourites/planet/<int:planet_id>", methods = ["DELETE"])
+@app.route("/favourite/planet/<int:planet_id>", methods = ["DELETE"])
 def delete_planet_favourite(planet_id):
-    favourite = Favourite.query.get(planet_id).delete()
-    db.session.commit()
+    favourite = Favourite.query.get(planet_id)
+    if favourite == None:
+        return ("this favourite does not exist"),200
+    else:
+        db.session.delete(favourite)
+        db.session.commit()
+        return jsonify("Planet deleted from favourites"),200
 
-    return jsonify("Planet deleted from favourites"),200
-
-@app.route("/favourites/person/<int:person_id>", methods = ["POST"])
+@app.route("/favourite/person/<int:person_id>", methods = ["POST"])
 def add_person_favourite(person_id):
     body = request.get_json()
     new_person_favourite = Favourite(user_id=body["user_id"], person_id=body["person_id"])
-    db.session.add(Favourite)
+    db.session.add(new_person_favourite)
     db.session.commit()
 
     return jsonify("Person added to favourites"),200
 
-@app.route("/favourites/person/<int:person_id>", methods = ["DELETE"])
+@app.route("/favourite/person/<int:person_id>", methods = ["DELETE"])
 def delete_person_favourite(person_id):
-    favourite = Favourite.query.get(person_id).delete()
-    db.session.commit()
-
-    return jsonify("Person deleted from favourites"),200
+    favourite = Favourite.query.get(person_id)
+    if favourite == None:
+        return ("this favourite does not exist"),200
+    else:
+        db.session.delete(favourite)
+        db.session.commit()   
+        return jsonify("Person deleted from favourites"),200
 
 
 
