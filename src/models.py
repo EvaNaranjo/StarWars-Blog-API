@@ -29,7 +29,7 @@ class Person(db.Model):
     def serialize(self):
         return {
             "id": self.id,
-            "name": self.email,
+            "name": self.name,
             "url":self.url,
         }
 
@@ -44,6 +44,29 @@ class Planet(db.Model):
     def serialize(self):
         return {
             "id": self.id,
-            "name": self.email,
+            "name": self.name,
             "url":self.url,
+        }
+
+
+class Favourite(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    planet_id = db.Column(db.Integer, db.ForeignKey("planet.id"), nullable=False)
+    person_id= db.Column(db.Integer, db.ForeignKey("person.id"), nullable=False)
+    user= db.relationship(User)
+    planet= db.relationship(Planet)
+    person= db.relationship(Person)
+
+
+    def __repr__(self):
+        return '<Favourite %r>' % self.id
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "planet_id": self.planet_id,
+            "person_id": self.person_id,
+            
         }
